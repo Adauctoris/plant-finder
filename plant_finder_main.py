@@ -78,7 +78,7 @@ def execute_request(request, value): #Executes request from statements formed in
     finally:
             connection.close() #Ensures database connection properly closed
 
-def data_input(search_option, soil_type, ph_min, ph_max): #Recieves data input from frontend, before executing request
+def data_input(search_option, soil_type, ph_min, ph_max): #Receives data input from frontend, before executing request
 
     if search_option == 'soil':
         request = "SELECT plant.id, plant.name, plant.description, plant.ph_min, plant.ph_max, plant.sunlight, plant.water_frequency FROM plant JOIN plant_soil ON plant.id = plant_soil.plant_id JOIN soil_type on plant_soil.soil_type_id = soil_type.id WHERE soil_type.name = (?);"
