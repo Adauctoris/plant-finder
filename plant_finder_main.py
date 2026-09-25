@@ -65,7 +65,7 @@ plants = [
     {'id': 10, 'name': 'Daisy', 'description': 'A cheerful flowering plant', 'ph_min': 6, 'ph_max': 7, 'sunlight': 'Full Sun to Partial Shade', 'water_frequency': 'Once a week'}
 ]
 
-def execute_request(request, value):
+def execute_request(request, value): #Executes request from statements formed in data_input
     connection = sqlite3.connect('gardening.db')
     try:
         cursor = connection.cursor()
@@ -73,34 +73,21 @@ def execute_request(request, value):
 
         cursor.execute(request, value)
         results = cursor.fetchall()
-        # for row in results: #Prints relevant database rows
-        #     return(row)
         return results
 
     finally:
-            connection.close()
+            connection.close() #Ensures database connection properly closed
 
-def data_input(search_option, soil_type, ph_min, ph_max):
-
-    #search_option = input("Search by soil type or pH range? (Enter 'soil' or 'ph' - 'exit' to quit): ").strip().lower()
+def data_input(search_option, soil_type, ph_min, ph_max): #Recieves data input from frontend, before executing request
 
     if search_option == 'soil':
-        #soil_type = input("Enter soil type (Gravel, Clay, Sand): ").strip().capitalize()
         request = "SELECT plant.id, plant.name, plant.description, plant.ph_min, plant.ph_max, plant.sunlight, plant.water_frequency FROM plant JOIN plant_soil ON plant.id = plant_soil.plant_id JOIN soil_type on plant_soil.soil_type_id = soil_type.id WHERE soil_type.name = (?);"
         return execute_request(request, [soil_type])
 
-    elif search_option == 'ph':
-        #ph_min = int(input("Enter minimum pH value: ").strip())
-        #ph_max = int(input("Enter maximum pH value: ").strip())
+    else:
         request = "SELECT id, name, description, ph_min, ph_max, sunlight, water_frequency FROM plant WHERE (ph_min BETWEEN ? AND ?) OR (ph_max BETWEEN ? AND ?);"
         return execute_request(request, [ph_min, ph_max, ph_min, ph_max])
 
-    #elif search_option == 'exit':
-        # print("Exiting the program.")
-        #  break
-
-    # else:
-    #     return "Invalid option. Please enter 'soil' or 'ph'."
 
 
 refresh = False #Set to True to refresh database with new data
@@ -113,29 +100,6 @@ if refresh:
     for mapping in plant_soil_mappings:
         sql = f"insert or ignore into plant_soil (id, plant_id, soil_type_id) values ('{mapping['id']}', '{mapping['plant_id']}', '{mapping['soil_type_id']}')"
         cursor.execute(sql)
-
-
-# search_option = input("Search by soil type or pH range? (Enter 'soil' or 'ph' - 'exit' to quit): ").strip().lower()
-
-# if search_option == 'soil':
-#     soil_type = input("Enter soil type (Gravel, Clay, Sand): ").strip().capitalize()
-#     results = data_input(search_option, soil_type, None, None)
-#     for row in results:
-#         print(row)
-
-# elif search_option == 'ph':
-#     ph_min = int(input("Enter minimum pH value: ").strip())
-#     ph_max = int(input("Enter maximum pH value: ").strip())
-#     results = data_input(search_option, None, ph_min, ph_max)
-#     for row in results:
-#         print(row)
-
-# elif search_option == 'exit':
-#     print("Exiting the program.")
-
-# else:
-#     print("Invalid option. Please enter 'soil' or 'ph'.")
-
 
 
 connection.commit() #Makes changes and closes database
